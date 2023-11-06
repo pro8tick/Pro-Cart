@@ -8,7 +8,7 @@ function Slider() {
   const navigate = useNavigate();
   const [currentSlide, setcurrentSlide] = useState(0);
   const slideLength = sliderData.length;
-  const autoScroll = false;
+  const autoScroll = true;
 
   const intervalTime = 5000;
 

@@ -15,7 +15,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { isLoading, isSuccess } = useSelector((state) => state.auth);
+  const { isLoading, isLoggedIn } = useSelector((state) => state.auth);
 
   const loginUser = async (e) => {
     e.preventDefault();
@@ -38,11 +38,14 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isLoggedIn) {
       navigate("/");
-      dispatch(RESET_AUTH());
     }
-  }, [isSuccess, dispatch, navigate]);
+
+    return () => {
+      dispatch(RESET_AUTH());
+    };
+  }, [dispatch, navigate, isLoggedIn]);
 
   return (
     <>

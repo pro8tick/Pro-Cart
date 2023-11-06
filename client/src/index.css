@@ -37,11 +37,24 @@ html {
 
 body {
   font-family: var(--font-family);
+  min-height: 100vh;
 }
 
 section {
   width: 100%;
   padding: 4rem 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  margin-top: 8rem;
+  flex-grow: 1;
+  background-color: rgba(198, 215, 253, 0.788);
 }
 
 .container {

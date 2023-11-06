@@ -132,7 +132,7 @@ const Profile = () => {
     <section className="--bg-grey">
       {isLoading && <Loader />}
 
-      <div className="container --mt">
+      <div className="container">
         <PageMenu />
         <h2>Profile</h2>
         <div className="--flex-between --mb profile">
