@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { ObjectId } = mongoose.Schema;
+const { ObjectId, Mixed } = mongoose.Schema;
 const bcrypt = require("bcryptjs");
 const validator = require("validator");
 
@@ -17,10 +17,9 @@ const userSchema = new mongoose.Schema(
       validate: [validator.isEmail, "{VALUE} is not a valid email"],
     },
     password: {
-      type: String,
+      type: Buffer,
       required: [true, "Please add a password"],
       minLength: [6, "Password must be atleast 6 characters"],
-      select: false,
     },
     role: {
       type: String,
@@ -38,14 +37,13 @@ const userSchema = new mongoose.Schema(
     address: {
       type: Object,
     },
+    addresses: { type: [Mixed], default: [] },
     isBlocked: {
       type: Boolean,
       default: false,
     },
-    cart: {
-      type: Array,
-      default: [],
-    },
+    salt: Buffer,
+    resetPasswordToken: { type: String, default: "" },
     wishlist: [{ type: ObjectId, ref: "Product" }],
   },
   {
@@ -53,16 +51,17 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-//Encrypt pass before saving to db
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    return next;
-  }
-  //Hash password
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(this.password, salt);
-  this.password = hashedPassword;
-  next();
+const virtualId = userSchema.virtual("id");
+virtualId.get(function () {
+  return this._id;
+});
+
+userSchema.set("toJSON", {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret) {
+    delete ret._id;
+  },
 });
 
 const User = mongoose.model("User", userSchema);

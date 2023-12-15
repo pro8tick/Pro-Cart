@@ -1,26 +1,20 @@
 const express = require("express");
 const router = express.Router();
+
 const {
-  registerUser,
-  loginUser,
-  logout,
-  getUser,
-  getLoginStatus,
   updateUser,
   updatePhoto,
   blockUser,
   unblockUser,
+  getUser,
 } = require("../controllers/userController");
-const { protect, adminOnly } = require("../middleware/authMiddleware");
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
-router.get("/logout", logout);
-router.get("/getUser", protect, getUser);
-router.get("/getLoginStatus", getLoginStatus);
-router.patch("/updateUser", protect, updateUser);
-router.patch("/updatePhoto", protect, updatePhoto);
-router.patch("/block-user/:id", protect, adminOnly, blockUser);
-router.patch("/unblock-user/:id", protect, adminOnly, unblockUser);
+const { adminOnly } = require("../middleware/authMiddleware");
+
+router.get("/getUser", getUser);
+router.patch("/updateUser", updateUser);
+router.patch("/updatePhoto", updatePhoto);
+router.patch("/block-user/:id", adminOnly, blockUser);
+router.patch("/unblock-user/:id", adminOnly, unblockUser);
 
 module.exports = router;

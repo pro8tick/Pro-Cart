@@ -14,5 +14,12 @@ function ShowOnLogOut({ children }) {
   }
   return null;
 }
+function ShowOnAdmin({ children }) {
+  const { isLoggedIn, user } = useSelector((state) => state.auth);
+  if (isLoggedIn && user && user.role === "admin") {
+    return children;
+  }
+  return null;
+}
 
-export { ShowOnLogin, ShowOnLogOut };
+export { ShowOnLogin, ShowOnLogOut, ShowOnAdmin };

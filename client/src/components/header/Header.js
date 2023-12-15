@@ -3,10 +3,15 @@ import styles from "./Header.module.scss";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { FaShoppingCart, FaTimes, FaUserCircle } from "react-icons/fa";
 import { HiOutlineMenuAlt3 } from "react-icons/hi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RESET_AUTH, logout } from "../../redux/features/auth/authSlice";
-import { ShowOnLogOut, ShowOnLogin } from "../hiddenLink/ShowOnLogin";
+import {
+  ShowOnAdmin,
+  ShowOnLogOut,
+  ShowOnLogin,
+} from "../hiddenLink/ShowOnLogin";
 import { UserName } from "../../pages/profile/Profile";
+import { selectItems } from "../../redux/features/cart/cartSlice";
 export const logo = (
   <div className={styles.logo}>
     <Link to="/">
@@ -24,7 +29,7 @@ const Header = () => {
   const [scroll, setScroll] = useState(true);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const items = useSelector(selectItems);
   const fixedNavbar = () => {
     if (window.scrollY > 800) {
       setScroll(false);
@@ -53,7 +58,7 @@ const Header = () => {
       <Link to="/cart">
         Cart
         <FaShoppingCart size={20} />
-        <p>0</p>
+        {items.length > 0 && <p>{items.length}</p>}
       </Link>
     </span>
   );
@@ -61,7 +66,18 @@ const Header = () => {
   return (
     <header className={scroll ? "" : `${styles.move}`}>
       <div className={styles.header}>
-        {logo}
+        <div className={styles.admin}>
+          {logo}
+          <ShowOnAdmin>
+            <Link to="/admin/orders" className={activeLink}>
+              Orders
+            </Link>
+            <Link to="/admin" className={activeLink}>
+              Products
+            </Link>
+          </ShowOnAdmin>
+        </div>
+
         <nav
           className={
             showMenu ? `${styles["show-nav"]}` : `${styles["hide-nav"]}`

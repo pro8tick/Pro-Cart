@@ -20,9 +20,7 @@ const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { name, email, password, confirmpassword } = formData;
-  const { isLoading, isLoggedIn, isSuccess } = useSelector(
-    (state) => state.auth
-  );
+  const { isLoading, isLoggedIn } = useSelector((state) => state.auth);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -53,11 +51,11 @@ const Register = () => {
   };
 
   useEffect(() => {
-    if (isSuccess && isLoggedIn) {
+    if (isLoggedIn) {
       navigate("/");
       dispatch(RESET_AUTH());
     }
-  }, [isSuccess, isLoggedIn, dispatch, navigate]);
+  }, [isLoggedIn, dispatch, navigate]);
 
   return (
     <>

@@ -6,15 +6,15 @@ const {
   deleteProduct,
   updateProduct,
 } = require("../controllers/productController");
-const { protect, adminOnly } = require("../middleware/authMiddleware");
+const { adminOnly } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-router.route("/").post(protect, adminOnly, createProduct).get(getProducts);
+router.route("/").post(createProduct).get(getProducts);
 router
   .route("/:id")
   .get(getProduct)
-  .delete(protect, adminOnly, deleteProduct)
-  .patch(protect, adminOnly, updateProduct);
+  .delete(adminOnly, deleteProduct)
+  .patch(adminOnly, updateProduct);
 
 module.exports = router;

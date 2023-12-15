@@ -1,27 +1,8 @@
 const asyncHandler = require("express-async-handler");
-const jwt = require("jsonwebtoken");
-const User = require("../model/userModel");
-
-const protect = asyncHandler(async (req, res, next) => {
-  token = req.cookies.token || null;
-
-  if (!token) {
-    res.status(401);
-    throw new Error("Not Authorized, please login");
-  }
-
-  //verify Token
-  const verified = jwt.verify(token, process.env.JWT_SECRET);
-  const user = await User.findById(verified.id).select("-password");
-
-  if (!user) {
-    res.status(401);
-    throw new Error("User not found");
-  }
-
-  req.user = user;
-  next();
-});
+const passport = require("passport");
+const protect = (req, res, next) => {
+  return passport.authenticate("jwt");
+};
 
 //Admin only
 const adminOnly = (req, res, next) => {
@@ -33,7 +14,21 @@ const adminOnly = (req, res, next) => {
   }
 };
 
+const sanitizeUser = (user) => {
+  return { id: user.id, role: user.role };
+};
+
+function cookieExtractor(req) {
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies["jwt"];
+  }
+  return token;
+}
+
 module.exports = {
   protect,
   adminOnly,
+  sanitizeUser,
+  cookieExtractor,
 };

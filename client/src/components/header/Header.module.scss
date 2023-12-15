@@ -41,6 +41,20 @@ header {
     white-space: nowrap;
   }
 
+  .admin {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    a {
+      color: #fff;
+      position: relative;
+      &:hover {
+        color: orangered;
+      }
+      padding: 0 0.7rem 0.7rem 1.5rem;
+    }
+  }
+
   nav {
     width: 75%;
     display: flex;

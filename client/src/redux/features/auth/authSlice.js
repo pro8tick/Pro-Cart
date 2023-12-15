@@ -6,9 +6,11 @@ const initialState = {
   isLoggedIn: false,
   user: null,
   isError: false,
-  isSuccess: false,
+  error: null,
   isLoading: false,
-  message: "",
+  userOrders: [],
+  status: "",
+  userChecked: false,
 };
 
 // Register User
@@ -16,15 +18,10 @@ export const register = createAsyncThunk(
   "auth/register",
   async (userData, thunkAPI) => {
     try {
-      return await authService.register(userData);
+      const res = await authService.register(userData);
+      return res.data;
     } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -34,15 +31,10 @@ export const login = createAsyncThunk(
   "auth/login",
   async (userData, thunkAPI) => {
     try {
-      return await authService.login(userData);
+      const res = await authService.login(userData);
+      return res.data;
     } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
@@ -63,30 +55,20 @@ export const getLoginStatus = createAsyncThunk(
   "auth/getLogInStatus",
   async (_, thunkAPI) => {
     try {
-      return await authService.getLoginStatus();
+      const { data } = await authService.getLoginStatus();
+      return data;
     } catch (error) {
-      const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
-      return thunkAPI.rejectWithValue(message);
+      return thunkAPI.rejectWithValue(error);
     }
   }
 );
 // get User
-export const getUser = createAsyncThunk("auth/getUser", async (_, thunkAPI) => {
-  try {
-    return await authService.getUser();
-  } catch (error) {
-    const message =
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString();
-    return thunkAPI.rejectWithValue(message);
-  }
+export const getUser = createAsyncThunk("auth/getUser", async () => {
+  const response = await authService.getUser();
+  // The value we return becomes the `fulfilled` action payload
+  return response.data;
 });
+
 // Update User
 export const updateUser = createAsyncThunk(
   "auth/updateUser",
@@ -121,6 +103,13 @@ export const updatePhoto = createAsyncThunk(
     }
   }
 );
+export const getUserOrderAsync = createAsyncThunk(
+  "auth/getUserOrder",
+  async () => {
+    const response = await authService.getUserOrders();
+    return response.data;
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -128,9 +117,7 @@ const authSlice = createSlice({
   reducers: {
     RESET_AUTH(state) {
       state.isError = false;
-      state.isSuccess = false;
       state.isLoading = false;
-      state.message = "";
     },
   },
   extraReducers: (builder) => {
@@ -141,18 +128,14 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
-        state.isLoggedIn = true;
-        state.user = action.payload.user;
-        state.message = action.payload.message;
+
+        state.isLoggedIn = action.payload ? true : false;
         toast.success("Registration successfull");
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload;
-        state.user = null;
-        toast.error(action.payload);
+        state.error = action.payload;
       })
       //login-user
       .addCase(login.pending, (state) => {
@@ -160,18 +143,15 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
-        state.isLoggedIn = true;
-        state.user = action.payload.user;
-        state.message = action.payload.message;
+        state.isLoggedIn = action.payload ? true : false;
         toast.success("Login successfull");
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload;
+        state.error = action.payload;
         state.user = null;
-        toast.error(action.payload);
+        toast.error(state.error || state.error.message);
       })
       //logout-user
       .addCase(logout.pending, (state) => {
@@ -179,37 +159,28 @@ const authSlice = createSlice({
       })
       .addCase(logout.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isSuccess = true;
         state.isLoggedIn = false;
         state.user = null;
-        state.message = action.payload.status;
         toast.success(action.payload);
       })
       .addCase(logout.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload;
         state.user = null;
         toast.error(action.payload);
       })
       //login-status
       .addCase(getLoginStatus.pending, (state) => {
-        // state.isLoading = true;
+        state.isLoading = true;
       })
       .addCase(getLoginStatus.fulfilled, (state, action) => {
-        // state.isLoading = false;
-        state.isSuccess = true;
-        state.isLoggedIn = action.payload;
-
-        if (action.payload.message === "invalid signature") {
-          state.isLoggedIn = false;
-        }
+        state.isLoading = false;
+        state.isLoggedIn = action.payload ? true : false;
+        state.userChecked = true;
       })
       .addCase(getLoginStatus.rejected, (state, action) => {
         state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-        state.user = null;
+        state.userChecked = true;
       })
       //Get user
       .addCase(getUser.pending, (state) => {
@@ -218,14 +189,12 @@ const authSlice = createSlice({
       .addCase(getUser.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.isLoading = false;
-        state.isSuccess = true;
-        state.user = action.payload.user;
+        state.user = action.payload;
       })
       .addCase(getUser.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload;
-        toast.error(action.payload);
+        //state.error = action.payload;
       })
       //update user
       .addCase(updateUser.pending, (state) => {
@@ -234,7 +203,6 @@ const authSlice = createSlice({
       .addCase(updateUser.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.isLoading = false;
-        state.isSuccess = true;
         toast.success("User updated");
         state.user = action.payload.user;
       })
@@ -251,19 +219,29 @@ const authSlice = createSlice({
       .addCase(updatePhoto.fulfilled, (state, action) => {
         state.isLoggedIn = true;
         state.isLoading = false;
-        state.isSuccess = true;
         toast.success("User Photo updated");
         state.user = action.payload.user;
       })
+      //get User Orders
       .addCase(updatePhoto.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
         toast.error(action.payload);
+      })
+      .addCase(getUserOrderAsync.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getUserOrderAsync.fulfilled, (state, action) => {
+        state.status = "idle";
+        state.userOrders = action.payload;
       });
   },
 });
 
 export const { RESET_AUTH } = authSlice.actions;
-
+export const selectUserOrder = (state) => state.auth.userOrders;
+export const selectUsererror = (state) => state.auth.error;
+export const selectUser = (state) => state.auth.isLoggedIn;
+export const selectCheck = (state) => state.auth.userChecked;
 export default authSlice.reducer;

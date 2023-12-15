@@ -87,7 +87,7 @@ const Login = () => {
             </span>
             <div class="text-sm mt-2">
               <Link
-                to="#"
+                to="/reset-password"
                 className="font-semibold text-indigo-600 hover:text-indigo-500 ml-[15%]"
               >
                 Forgot password?

@@ -7,8 +7,8 @@
     "@heroicons/react": "^2.0.18",
     "@paypal/react-paypal-js": "^7.8.3",
     "@reduxjs/toolkit": "^1.9.1",
-    "@stripe/react-stripe-js": "^1.16.4",
-    "@stripe/stripe-js": "^1.46.0",
+    "@stripe/react-stripe-js": "^1.16.5",
+    "@stripe/stripe-js": "^1.54.2",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -23,13 +23,17 @@
     "rc-rate": "^2.12.0",
     "rc-slider": "^10.2.1",
     "react": "^18.2.0",
+    "react-alert": "^7.0.3",
+    "react-alert-template-basic": "^1.0.2",
     "react-chartjs-2": "^5.0.1",
     "react-confetti": "^6.1.0",
     "react-confirm-alert": "^3.0.6",
     "react-country-region-selector": "^3.6.1",
     "react-datepicker": "^4.14.1",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.48.2",
     "react-icons": "^4.7.1",
+    "react-loader-spinner": "^5.4.5",
     "react-multi-carousel": "^2.8.4",
     "react-paginate": "^8.1.4",
     "react-quill": "^2.0.0",
@@ -47,7 +51,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "jsonserver": "json-server --watch data.json --port 5050"
   },
   "eslintConfig": {
     "extends": [
