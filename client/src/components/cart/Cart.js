@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux";
-
 import { Link } from "react-router-dom";
 import {
   deleteCartProductAsync,
@@ -96,16 +95,14 @@ export default function Cart() {
                               message="Are you sure you want to delete this cart item?"
                               dangerOption="Delete"
                               cancelOption="Cancel"
-                              cancelAction={() => setShowModal(-1)}
-                              dangerAction={(e) =>
-                                handleRemove(e, product.product.id)
-                              }
-                              showModal={showModal === product.product.id}
+                              cancelAction={() => setShowModal(null)}
+                              dangerAction={(e) => handleRemove(e, product.id)}
+                              showModal={showModal === product.id}
                             ></Modal>
                             <button
                               type="button"
                               className="font-medium text-indigo-600 hover:text-indigo-500"
-                              onClick={(e) => setShowModal(product.product.id)}
+                              onClick={(e) => setShowModal(product.id)}
                             >
                               Remove
                             </button>

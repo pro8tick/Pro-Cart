@@ -110,7 +110,7 @@ app.use(passport.authenticate("session"));
 //Routes
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/users", protect(), userRoute);
-app.use("/api/v1/products", protect(), productRoute);
+app.use("/api/v1/products", productRoute);
 app.use("/api/v1/cart", protect(), cartRoute);
 app.use("/api/v1/order", protect(), orderRoute);
 app.use("/api/v1/category", protect(), categoryRoute);
